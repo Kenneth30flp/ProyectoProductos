@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salida de Productos | ProyectoProductos</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f5f7fb;
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+        }
+
+        .search-input {
+            max-width: 320px;
+        }
+
+        .badge-stock {
+            font-size: 0.9rem;
+            padding: 8px 12px;
+            border-radius: 999px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container py-4">
+
+    <!-- Header -->
+    <div class="page-header mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="fw-bold mb-1">
+                    <i class="bi bi-box-arrow-up-right me-2 text-primary"></i>
+                    Salida de Productos
+                </h2>
+                <p class="text-muted mb-0">Registro y control del egreso de inventario.</p>
+            </div>
+
+            <div>
+                <a href="/" class="btn btn-outline-secondary me-2">
+                    <i class="bi bi-house-door"></i> Inicio
+                </a>
+                <a href="/salidas/nueva" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Nueva salida
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alertas -->
+    <% if (success) { %>
+        <div class="alert alert-success"><%= success %></div>
+    <% } %>
+
+    <% if (error) { %>
+        <div class="alert alert-danger"><%= error %></div>
+    <% } %>
+
+    <!-- Tabla -->
+    <div class="table-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0">Historial de salidas</h5>
+            <input type="text" id="buscadorSalidas" class="form-control search-input" placeholder="Buscar producto...">
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle" id="tablaSalidas">
+                <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Fecha</th>
+                    <th>Stock actual</th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                <% if (salidas.length > 0) { %>
+
+                    <% salidas.forEach(salida => { %>
+                        <tr>
+                            <td>#<%= salida.ID %></td>
+
+                            <td><%= salida.Producto %></td>
+
+                            <td>
+                                <span class="badge bg-danger-subtle text-danger border">
+                                    <%= salida.Cantidad %>
+                                </span>
+                            </td>
+
+                            <td><%= salida.FechaSalidaTexto %></td>
+
+                            <td>
+                                <span class="badge bg-primary-subtle text-primary border badge-stock">
+                                    <%= salida.Stock %> unidades
+                                </span>
+                            </td>
+                        </tr>
+                    <% }) %>
+
+                <% } else { %>
+
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">
+                            No hay registros de salidas
+                        </td>
+                    </tr>
+
+                <% } %>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const buscador = document.getElementById('buscadorSalidas');
+    const filas = document.querySelectorAll('#tablaSalidas tbody tr');
+
+    buscador.addEventListener('keyup', function () {
+        const texto = this.value.toLowerCase();
+
+        filas.forEach(function (fila) {
+            const contenido = fila.textContent.toLowerCase();
+            fila.style.display = contenido.includes(texto) ? '' : 'none';
+        });
+    });
+</script>
+
+</body>
+</html>

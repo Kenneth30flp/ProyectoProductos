@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Productos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f4f6f9;
+        }
+
+        .page-header-card,
+        .table-card {
+            border: none;
+            border-radius: 18px;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        .page-header-card {
+            background: linear-gradient(135deg, #0d6efd, #3d8bfd);
+            color: white;
+        }
+
+        .action-btn {
+            min-width: 130px;
+        }
+
+        .table thead th {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .table tbody td {
+            vertical-align: middle;
+        }
+
+        .badge-stock {
+            font-size: 0.9rem;
+            padding: 0.55em 0.8em;
+            border-radius: 999px;
+        }
+
+        .section-title {
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .section-subtitle {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container py-5">
+
+    <div class="card page-header-card mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                <div>
+                    <h1 class="mb-2 fw-bold">Gestión de Productos</h1>
+                    <p class="mb-0">
+                        Administra los productos del inventario, consulta su stock actual
+                        y controla la información registrada en el sistema.
+                    </p>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="/" class="btn btn-light action-btn">Volver al menú</a>
+                    <a href="/productos/nuevo" class="btn btn-dark action-btn">Nuevo Producto</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card table-card">
+        <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
+                <div>
+                    <h4 class="section-title">Listado de productos</h4>
+                    <p class="section-subtitle">Visualiza, edita o elimina los productos registrados.</p>
+                </div>
+                <div style="max-width: 320px; width: 100%;">
+                    <input type="text" id="buscadorProductos" class="form-control" placeholder="Buscar producto...">
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="tablaProductos">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Fecha de ingreso</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (productos.length > 0) { %>
+                            <% productos.forEach(producto => { %>
+                                <tr>
+                                    <td class="text-center fw-semibold"><%= producto.IdProducto %></td>
+                                    <td class="fw-semibold"><%= producto.NombreProducto %></td>
+                                    <td><%= producto.Descripcion ? producto.Descripcion : 'Sin descripción' %></td>
+                                    <td class="fw-semibold">Q <%= producto.Precio ? producto.Precio : '0.00' %></td>
+                                    <td>
+                                        <% if (producto.Stock < 10) { %>
+                                            <span class="badge bg-danger badge-stock"><%= producto.Stock %></span>
+                                        <% } else if (producto.Stock <= 20) { %>
+                                            <span class="badge bg-warning text-dark badge-stock"><%= producto.Stock %></span>
+                                        <% } else { %>
+                                            <span class="badge bg-success badge-stock"><%= producto.Stock %></span>
+                                        <% } %>
+                                    </td>
+                                    <td><%= producto.FechaIngresoFormateada ? producto.FechaIngresoFormateada : '-' %></td>
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                            <a href="/productos/editar/<%= producto.IdProducto %>" class="btn btn-warning btn-sm">
+                                                Editar
+                                            </a>
+                                            <a href="/productos/eliminar/<%= producto.IdProducto %>" class="btn btn-danger btn-sm btn-eliminar-producto">
+                                                Eliminar
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-muted">No hay productos registrados.</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+const success = "<%= typeof success !== 'undefined' ? success : '' %>";
+const error = "<%= typeof error !== 'undefined' ? error : '' %>";
+
+if (success === "producto_creado") {
+    Swal.fire({
+        icon: 'success',
+        title: 'Producto creado',
+        text: 'El producto fue registrado correctamente.',
+        confirmButtonColor: '#3085d6'
+    });
+}
+
+if (success === "producto_actualizado") {
+    Swal.fire({
+        icon: 'success',
+        title: 'Producto actualizado',
+        text: 'Los datos del producto se actualizaron correctamente.',
+        confirmButtonColor: '#3085d6'
+    });
+}
+
+if (success === "producto_eliminado") {
+    Swal.fire({
+        icon: 'success',
+        title: 'Producto eliminado',
+        text: 'El producto fue eliminado correctamente.',
+        confirmButtonColor: '#3085d6'
+    });
+}
+
+if (error === "producto_duplicado") {
+    Swal.fire({
+        icon: 'error',
+        title: 'Producto duplicado',
+        text: 'Ya existe un producto con ese nombre.',
+        confirmButtonColor: '#d33'
+    });
+}
+
+if (error === "producto_no_encontrado") {
+    Swal.fire({
+        icon: 'error',
+        title: 'Producto no encontrado',
+        text: 'El producto que intentaste editar no existe o ya fue eliminado.',
+        confirmButtonColor: '#d33'
+    });
+}
+
+if (error === "error_servidor") {
+    Swal.fire({
+        icon: 'error',
+        title: 'Error del sistema',
+        text: 'Ocurrió un problema inesperado. Intenta nuevamente.',
+        confirmButtonColor: '#d33'
+    });
+}
+
+document.querySelectorAll('.btn-eliminar-producto').forEach(function(boton) {
+    boton.addEventListener('click', function(e) {
+        e.preventDefault();
+        const url = this.getAttribute('href');
+
+        Swal.fire({
+            title: '¿Eliminar producto?',
+            text: 'Esta acción no se puede deshacer.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d'
+        }).then(function(result) {
+            if (result.isConfirmed) {
+                window.location.href = url;
+            }
+        });
+    });
+});
+
+document.getElementById('buscadorProductos').addEventListener('keyup', function() {
+    const filtro = this.value.toLowerCase();
+    const filas = document.querySelectorAll('#tablaProductos tbody tr');
+
+    filas.forEach(function(fila) {
+        const texto = fila.textContent.toLowerCase();
+        fila.style.display = texto.includes(filtro) ? '' : 'none';
+    });
+});
+</script>
+</body>
+</html>

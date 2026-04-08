@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distribución Producto - Proveedor</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f4f6f9;
+        }
+
+        .page-header-card,
+        .form-card,
+        .table-card {
+            border: none;
+            border-radius: 18px;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        .page-header-card {
+            background: linear-gradient(135deg, #ffc107, #ffda6a);
+            color: #212529;
+        }
+
+        .table thead th {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .table tbody td {
+            vertical-align: middle;
+        }
+
+        .section-title {
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .section-subtitle {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+
+        .action-btn {
+            min-width: 140px;
+        }
+    </style>
+</head>
+<body>
+<div class="container py-4">
+
+    <div class="card page-header-card mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                <div>
+                    <h1 class="mb-2 fw-bold">Distribución Producto - Proveedor</h1>
+                    <p class="mb-0">
+                        Relaciona productos con proveedores, registra cantidades suministradas
+                        y controla el stock vinculado a cada distribución.
+                    </p>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="/" class="btn btn-dark action-btn">Volver al menú</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card form-card mb-4">
+        <div class="card-body p-4">
+            <div class="mb-3">
+                <h4 class="section-title">Nueva distribución</h4>
+                <p class="section-subtitle">Asigna un producto a un proveedor con su cantidad suministrada.</p>
+            </div>
+
+            <form action="/distribucion/crear" method="POST" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Producto</label>
+                    <select name="IdProducto" class="form-select" required>
+                        <option value="">Seleccione un producto</option>
+                        <% productos.forEach(producto => { %>
+                            <option value="<%= producto.IdProducto %>">
+                                <%= producto.NombreProducto %> (Stock actual: <%= producto.Stock %>)
+                            </option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Proveedor</label>
+                    <select name="IdProveedor" class="form-select" required>
+                        <option value="">Seleccione un proveedor</option>
+                        <% proveedores.forEach(proveedor => { %>
+                            <option value="<%= proveedor.IdProveedor %>">
+                                <%= proveedor.NombreProveedor %>
+                            </option>
+                        <% }) %>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Cantidad suministrada</label>
+                    <input type="number" name="CantidadSuministrada" class="form-control" min="1" required>
+                </div>
+
+                <div class="col-12 d-flex flex-wrap gap-2">
+                    <button type="submit" class="btn btn-success action-btn">Guardar distribución</button>
+                    <a href="/" class="btn btn-secondary action-btn">Volver al menú</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card table-card">
+        <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
+                <div>
+                    <h4 class="section-title">Listado de distribuciones</h4>
+                    <p class="section-subtitle">Consulta, edita o elimina las relaciones registradas.</p>
+                </div>
+                <div style="max-width: 320px; width: 100%;">
+                    <input type="text" id="buscadorDistribucion" class="form-control" placeholder="Buscar distribución...">
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="tablaDistribucion">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Producto</th>
+                            <th>Proveedor</th>
+                            <th>Cantidad suministrada</th>
+                            <th>Stock actual</th>
+                            <th>Fecha ingreso</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (distribuciones.length > 0) { %>
+                            <% distribuciones.forEach(item => { %>
+                                <tr>
+                                    <td class="fw-semibold"><%= item.NombreProducto %></td>
+                                    <td><%= item.NombreProveedor %></td>
+                                    <td>
+                                        <span class="badge bg-primary rounded-pill px-3 py-2">
+                                            <%= item.CantidadSuministrada %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success rounded-pill px-3 py-2">
+                                            <%= item.Stock %>
+                                        </span>
+                                    </td>
+                                    <td><%= item.FechaIngresoFormateada ? item.FechaIngresoFormateada : '-' %></td>
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                            <a href="/distribucion/editar/<%= item.IdProducto %>/<%= item.IdProveedor %>" class="btn btn-warning btn-sm">
+                                                Editar
+                                            </a>
+                                            <a href="/distribucion/eliminar/<%= item.IdProducto %>/<%= item.IdProveedor %>" class="btn btn-danger btn-sm btn-eliminar-distribucion">
+                                                Eliminar
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">No hay distribuciones registradas.</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+const success = "<%= typeof success !== 'undefined' ? success : '' %>";
+const error = "<%= typeof error !== 'undefined' ? error : '' %>";
+
+if (success === "distribucion_creada") {
+    Swal.fire({
+        icon: 'success',
+        title: 'Distribución registrada',
+        text: 'La distribución fue registrada correctamente.',
+        confirmButtonColor: '#ffc107'
+    });
+}
+
+if (success === "distribucion_actualizada") {
+    Swal.fire({
+        icon: 'success',
+        title: 'Distribución actualizada',
+        text: 'La distribución se actualizó correctamente.',
+        confirmButtonColor: '#ffc107'
+    });
+}
+
+if (success === "distribucion_eliminada") {
+    Swal.fire({
+        icon: 'success',
+        title: 'Distribución eliminada',
+        text: 'La distribución fue eliminada correctamente.',
+        confirmButtonColor: '#ffc107'
+    });
+}
+
+if (error === "datos_invalidos_distribucion") {
+    Swal.fire({
+        icon: 'error',
+        title: 'Datos inválidos',
+        text: 'Debes seleccionar un producto, un proveedor y una cantidad válida.',
+        confirmButtonColor: '#d33'
+    });
+}
+
+if (error === "relacion_existente") {
+    Swal.fire({
+        icon: 'error',
+        title: 'Relación ya existente',
+        text: 'Ese producto ya está relacionado con ese proveedor.',
+        confirmButtonColor: '#d33'
+    });
+}
+
+if (error === "relacion_no_encontrada") {
+    Swal.fire({
+        icon: 'error',
+        title: 'Relación no encontrada',
+        text: 'La distribución que intentaste modificar ya no existe.',
+        confirmButtonColor: '#d33'
+    });
+}
+
+if (error === "cantidad_invalida") {
+    Swal.fire({
+        icon: 'error',
+        title: 'Cantidad inválida',
+        text: 'La cantidad suministrada debe ser mayor que cero.',
+        confirmButtonColor: '#d33'
+    });
+}
+
+if (error === "stock_negativo") {
+    Swal.fire({
+        icon: 'error',
+        title: 'Stock inválido',
+        text: 'La operación dejaría el stock del producto en negativo.',
+        confirmButtonColor: '#d33'
+    });
+}
+
+if (error === "error_servidor") {
+    Swal.fire({
+        icon: 'error',
+        title: 'Error del sistema',
+        text: 'Ocurrió un problema inesperado. Intenta nuevamente.',
+        confirmButtonColor: '#d33'
+    });
+}
+
+document.querySelectorAll('.btn-eliminar-distribucion').forEach(function(boton) {
+    boton.addEventListener('click', function(e) {
+        e.preventDefault();
+        const url = this.getAttribute('href');
+
+        Swal.fire({
+            title: '¿Eliminar distribución?',
+            text: 'Se eliminará la relación entre producto y proveedor.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d'
+        }).then(function(result) {
+            if (result.isConfirmed) {
+                window.location.href = url;
+            }
+        });
+    });
+});
+
+document.getElementById('buscadorDistribucion').addEventListener('keyup', function() {
+    const filtro = this.value.toLowerCase();
+    const filas = document.querySelectorAll('#tablaDistribucion tbody tr');
+
+    filas.forEach(function(fila) {
+        const texto = fila.textContent.toLowerCase();
+        fila.style.display = texto.includes(filtro) ? '' : 'none';
+    });
+});
+</script>
+</body>
+</html>

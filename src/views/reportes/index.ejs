@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes del Sistema</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container py-4">
+
+    <h1 class="text-center mb-4">Reportes del Sistema</h1>
+
+    <!-- TARJETAS RESUMEN -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card shadow text-center border-0 h-100">
+                <div class="card-body">
+                    <h6>Total Productos</h6>
+                    <h2><%= resumen.TotalProductos %></h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow text-center border-0 h-100">
+                <div class="card-body">
+                    <h6>Total Proveedores</h6>
+                    <h2><%= resumen.TotalProveedores %></h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow text-center border-0 h-100">
+                <div class="card-body">
+                    <h6>Total Relaciones</h6>
+                    <h2><%= resumen.TotalRelaciones %></h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow text-center border-0 h-100">
+                <div class="card-body">
+                    <h6>Stock Total</h6>
+                    <h2><%= resumen.StockTotal %></h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABLA STOCK POR PRODUCTO -->
+    <div class="card shadow mb-4">
+        <div class="card-header bg-primary text-white">
+            Stock por producto
+        </div>
+        <div class="card-body table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Producto</th>
+                        <th>Descripción</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th>Fecha ingreso</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (stockPorProducto.length > 0) { %>
+                        <% stockPorProducto.forEach(producto => { %>
+                            <tr>
+                                <td><%= producto.IdProducto %></td>
+                                <td><%= producto.NombreProducto %></td>
+                                <td><%= producto.Descripcion ? producto.Descripcion : 'Sin descripción' %></td>
+                                <td>Q <%= producto.Precio ? producto.Precio : '0.00' %></td>
+                                <td><%= producto.Stock %></td>
+                                <td><%= producto.FechaIngresoFormateada ? producto.FechaIngresoFormateada : '-' %></td>
+                            </tr>
+                        <% }) %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="6" class="text-center">No hay productos registrados.</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- TABLA PROVEEDORES -->
+    <div class="card shadow mb-4">
+        <div class="card-header bg-success text-white">
+            Cantidad suministrada por proveedor
+        </div>
+        <div class="card-body table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Proveedor</th>
+                        <th>Teléfono</th>
+                        <th>Correo</th>
+                        <th>Productos relacionados</th>
+                        <th>Total suministrado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (suministradoPorProveedor.length > 0) { %>
+                        <% suministradoPorProveedor.forEach(proveedor => { %>
+                            <tr>
+                                <td><%= proveedor.IdProveedor %></td>
+                                <td><%= proveedor.NombreProveedor %></td>
+                                <td><%= proveedor.Telefono ? proveedor.Telefono : '-' %></td>
+                                <td><%= proveedor.CorreoElectronico ? proveedor.CorreoElectronico : '-' %></td>
+                                <td><%= proveedor.ProductosRelacionados %></td>
+                                <td><%= proveedor.TotalSuministrado %></td>
+                            </tr>
+                        <% }) %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="6" class="text-center">No hay proveedores registrados.</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- TABLA PRODUCTOS MÁS DISTRIBUIDOS -->
+    <div class="card shadow mb-4">
+        <div class="card-header bg-dark text-white">
+            Productos más distribuidos
+        </div>
+        <div class="card-body table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Producto</th>
+                        <th>Total distribuido</th>
+                        <th>Total de proveedores relacionados</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (topProductosDistribuidos.length > 0) { %>
+                        <% topProductosDistribuidos.forEach(producto => { %>
+                            <tr>
+                                <td><%= producto.IdProducto %></td>
+                                <td><%= producto.NombreProducto %></td>
+                                <td><%= producto.TotalDistribuido %></td>
+                                <td><%= producto.TotalProveedores %></td>
+                            </tr>
+                        <% }) %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="4" class="text-center">No hay datos de distribución.</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- GRÁFICAS -->
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    Gráfica de stock por producto
+                </div>
+                <div class="card-body">
+                    <canvas id="graficoStock"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    Gráfica de cantidad suministrada por proveedor
+                </div>
+                <div class="card-body">
+                    <canvas id="graficoProveedor"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white">
+                    Gráfica de productos más distribuidos
+                </div>
+                <div class="card-body">
+                    <canvas id="graficoProductosDistribuidos"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="/" class="btn btn-secondary">Volver al menú principal</a>
+    </div>
+
+</div>
+
+<script id="data-stock" type="application/json"><%- JSON.stringify(stockPorProducto) %></script>
+<script id="data-proveedores" type="application/json"><%- JSON.stringify(suministradoPorProveedor) %></script>
+<script id="data-productos-distribuidos" type="application/json"><%- JSON.stringify(topProductosDistribuidos) %></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const stockPorProducto = JSON.parse(document.getElementById('data-stock').textContent);
+    const suministradoPorProveedor = JSON.parse(document.getElementById('data-proveedores').textContent);
+    const topProductosDistribuidos = JSON.parse(document.getElementById('data-productos-distribuidos').textContent);
+
+    const ctxStock = document.getElementById('graficoStock');
+
+    new Chart(ctxStock, {
+        type: 'bar',
+        data: {
+            labels: stockPorProducto.map(function (item) {
+                return item.NombreProducto;
+            }),
+            datasets: [{
+                label: 'Stock actual',
+                data: stockPorProducto.map(function (item) {
+                    return item.Stock;
+                }),
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    const ctxProveedor = document.getElementById('graficoProveedor');
+
+    new Chart(ctxProveedor, {
+        type: 'doughnut',
+        data: {
+            labels: suministradoPorProveedor.map(function (item) {
+                return item.NombreProveedor;
+            }),
+            datasets: [{
+                label: 'Total suministrado',
+                data: suministradoPorProveedor.map(function (item) {
+                    return item.TotalSuministrado;
+                }),
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+
+    const ctxProductosDistribuidos = document.getElementById('graficoProductosDistribuidos');
+
+    new Chart(ctxProductosDistribuidos, {
+        type: 'line',
+        data: {
+            labels: topProductosDistribuidos.map(function (item) {
+                return item.NombreProducto;
+            }),
+            datasets: [{
+                label: 'Cantidad distribuida',
+                data: topProductosDistribuidos.map(function (item) {
+                    return item.TotalDistribuido;
+                }),
+                borderWidth: 2,
+                tension: 0.2,
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>

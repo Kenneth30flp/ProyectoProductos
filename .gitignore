@@ -1,0 +1,8 @@
+node_modules/
+.env
+*.log
+*.bak
+*.mdf
+*.ldf
+dist/
+build/

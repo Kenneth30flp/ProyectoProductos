@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Proveedores</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f4f6f9;
+        }
+
+        .page-header-card,
+        .table-card {
+            border: none;
+            border-radius: 18px;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        .page-header-card {
+            background: linear-gradient(135deg, #198754, #38b26c);
+            color: white;
+        }
+
+        .action-btn {
+            min-width: 140px;
+        }
+
+        .table thead th {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .table tbody td {
+            vertical-align: middle;
+        }
+
+        .section-title {
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .section-subtitle {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+
+        .info-pill {
+            display: inline-block;
+            background: #eef3f8;
+            padding: 0.45rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container py-5">
+
+    <div class="card page-header-card mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                <div>
+                    <h1 class="mb-2 fw-bold">Gestión de Proveedores</h1>
+                    <p class="mb-0">
+                        Administra la información de proveedores, edita sus datos de contacto
+                        y mantén actualizado el registro del sistema.
+                    </p>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="/" class="btn btn-light action-btn">Volver al menú</a>
+                    <a href="/proveedores/nuevo" class="btn btn-dark action-btn">Nuevo Proveedor</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card table-card">
+        <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-3">
+                <div>
+                    <h4 class="section-title">Listado de proveedores</h4>
+                    <p class="section-subtitle">Consulta, modifica o elimina los proveedores registrados.</p>
+                </div>
+                <div style="max-width: 320px; width: 100%;">
+                    <input type="text" id="buscadorProveedores" class="form-control" placeholder="Buscar proveedor...">
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="tablaProveedores">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Teléfono</th>
+                            <th>Correo</th>
+                            <th>Dirección</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (proveedores.length > 0) { %>
+                            <% proveedores.forEach(proveedor => { %>
+                                <tr>
+                                    <td class="text-center fw-semibold"><%= proveedor.IdProveedor %></td>
+                                    <td class="fw-semibold"><%= proveedor.NombreProveedor %></td>
+                                    <td><span class="info-pill"><%= proveedor.Telefono ? proveedor.Telefono : '-' %></span></td>
+                                    <td><%= proveedor.CorreoElectronico ? proveedor.CorreoElectronico : '-' %></td>
+                                    <td><%= proveedor.Direccion ? proveedor.Direccion : '-' %></td>
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                            <a href="/proveedores/editar/<%= proveedor.IdProveedor %>" class="btn btn-warning btn-sm">
+                                                Editar
+                                            </a>
+                                            <a href="/proveedores/eliminar/<%= proveedor.IdProveedor %>" class="btn btn-danger btn-sm btn-eliminar-proveedor">
+                                                Eliminar
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">No hay proveedores registrados.</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+const success = "<%= typeof success !== 'undefined' ? success : '' %>";
+const error = "<%= typeof error !== 'undefined' ? error : '' %>";
+
+if (success === "proveedor_creado") {
+    Swal.fire({
+        icon: 'success',
+        title: 'Proveedor creado',
+        text: 'El proveedor fue registrado correctamente.',
+        confirmButtonColor: '#198754'
+    });
+}
+
+if (success === "proveedor_actualizado") {
+    Swal.fire({
+        icon: 'success',
+        title: 'Proveedor actualizado',
+        text: 'Los datos del proveedor se actualizaron correctamente.',
+        confirmButtonColor: '#198754'
+    });
+}
+
+if (success === "proveedor_eliminado") {
+    Swal.fire({
+        icon: 'success',
+        title: 'Proveedor eliminado',
+        text: 'El proveedor fue eliminado correctamente.',
+        confirmButtonColor: '#198754'
+    });
+}
+
+if (error === "proveedor_no_encontrado") {
+    Swal.fire({
+        icon: 'error',
+        title: 'Proveedor no encontrado',
+        text: 'El proveedor que intentaste editar no existe o ya fue eliminado.',
+        confirmButtonColor: '#d33'
+    });
+}
+
+if (error === "error_servidor") {
+    Swal.fire({
+        icon: 'error',
+        title: 'Error del sistema',
+        text: 'Ocurrió un problema inesperado. Intenta nuevamente.',
+        confirmButtonColor: '#d33'
+    });
+}
+
+document.querySelectorAll('.btn-eliminar-proveedor').forEach(function(boton) {
+    boton.addEventListener('click', function(e) {
+        e.preventDefault();
+        const url = this.getAttribute('href');
+
+        Swal.fire({
+            title: '¿Eliminar proveedor?',
+            text: 'Esta acción no se puede deshacer.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d'
+        }).then(function(result) {
+            if (result.isConfirmed) {
+                window.location.href = url;
+            }
+        });
+    });
+});
+
+document.getElementById('buscadorProveedores').addEventListener('keyup', function() {
+    const filtro = this.value.toLowerCase();
+    const filas = document.querySelectorAll('#tablaProveedores tbody tr');
+
+    filas.forEach(function(fila) {
+        const texto = fila.textContent.toLowerCase();
+        fila.style.display = texto.includes(filtro) ? '' : 'none';
+    });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+const success = "<%= success %>";
+const error = "<%= error %>";
+
+if(success === "producto_creado"){
+Swal.fire({
+icon:'success',
+title:'Producto creado',
+text:'El producto fue registrado correctamente',
+confirmButtonColor:'#3085d6'
+});
+}
+
+if(success === "producto_actualizado"){
+Swal.fire({
+icon:'success',
+title:'Producto actualizado',
+text:'Los datos del producto se actualizaron correctamente',
+confirmButtonColor:'#3085d6'
+});
+}
+
+if(success === "producto_eliminado"){
+Swal.fire({
+icon:'success',
+title:'Producto eliminado',
+text:'El producto fue eliminado correctamente',
+confirmButtonColor:'#3085d6'
+});
+}
+
+if(error === "producto_duplicado"){
+Swal.fire({
+icon:'error',
+title:'Producto duplicado',
+text:'Ya existe un producto con ese nombre',
+confirmButtonColor:'#d33'
+});
+}
+
+if(error === "error_servidor"){
+Swal.fire({
+icon:'error',
+title:'Error del sistema',
+text:'Ocurrió un problema inesperado',
+confirmButtonColor:'#d33'
+});
+}
+
+</script>

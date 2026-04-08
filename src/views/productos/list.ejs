@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Productos</title></head>
+<body>
+  <h1>Productos</h1>
+  <a href="/">Volver</a> | <a href="/productos/nuevo">Nuevo producto</a>
+
+  <table border="1" cellpadding="6">
+    <tr>
+      <th>ID</th><th>Nombre</th><th>Precio</th><th>Stock</th><th>Fecha</th><th>Acciones</th>
+    </tr>
+
+    <% productos.forEach(p => { %>
+      <tr>
+        <td><%= p.IdProducto %></td>
+        <td><%= p.NombreProducto %></td>
+        <td><%= p.Precio %></td>
+        <td><%= p.Stock %></td>
+        <td><%= p.FechaIngreso %></td>
+        <td>
+          <a href="/productos/editar/<%= p.IdProducto %>">Editar</a>
+
+          <form method="post" action="/productos/eliminar/<%= p.IdProducto %>" style="display:inline">
+            <button type="submit" onclick="return confirm('¿Seguro que deseas eliminar este producto?')">
+              Eliminar
+            </button>
+          </form>
+        </td>
+      </tr>
+    <% }) %>
+  </table>
+</body>
+</html>
