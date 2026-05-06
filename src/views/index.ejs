@@ -256,8 +256,8 @@
 
         .modules-grid {
             display: grid;
-            grid-template-columns: repeat(5, minmax(0, 1fr));
-            gap: 18px;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 14px;
             width: 100%;
         }
 
@@ -325,19 +325,18 @@
             min-width: 220px;
         }
 
-        @media (min-width: 1400px) {
-            .page-shell {
-                padding-left: 12px;
-                padding-right: 12px;
-            }
+        .modules-grid {
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 18px;
+        }
 
             .dashboard-wrapper {
                 max-width: 1650px;
             }
 
             .modules-grid {
-                grid-template-columns: repeat(5, minmax(0, 1fr));
-                gap: 18px;
+                grid-template-columns: repeat(6, minmax(0, 1fr));
+                gap: 14px;
             }
         }
 
@@ -422,8 +421,8 @@
             }
 
             .module-card .card-body {
-                padding: 22px 16px;
-                min-height: auto;
+                padding: 22px 14px;
+                min-height: 250px;
             }
         }
 
@@ -674,6 +673,23 @@
                                     </p>
                                 </div>
                                 <a href="/productos" class="btn btn-primary btn-module">Ir al módulo</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="card module-card">
+                            <div class="card-body">
+                                <div>
+                                    <div class="module-icon bg-secondary-subtle text-secondary">
+                                        <i class="bi bi-person-vcard"></i>
+                                    </div>
+                                    <h5 class="module-title">Clientes</h5>
+                                    <p class="module-text">
+                                        Gestiona clientes utilizando almacenamiento en formato JSON, validando NIT, edición y control completo de datos.
+                                    </p>
+                                </div>
+                                <a href="/salidas/clientes" class="btn btn-secondary btn-module">Ir al módulo</a>
                             </div>
                         </div>
                     </div>

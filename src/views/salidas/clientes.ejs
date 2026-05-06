@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes JSON | ProyectoProductos</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-page: #f4f7fb;
+            --bg-card: #ffffff;
+            --text-main: #1f2937;
+            --text-soft: #6b7280;
+            --border-soft: #e9eef5;
+            --shadow-soft: 0 10px 30px rgba(15, 23, 42, 0.06);
+            --shadow-hover: 0 18px 40px rgba(15, 23, 42, 0.10);
+            --primary: #0d6efd;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: var(--bg-page);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-main);
+        }
+
+        .page-shell {
+            width: 100%;
+            padding: 22px 18px 36px;
+        }
+
+        .clientes-wrapper {
+            width: 100%;
+            max-width: 1450px;
+            margin: 0 auto;
+        }
+
+        .card-pro {
+            background: var(--bg-card);
+            border: 1px solid var(--border-soft);
+            border-radius: 22px;
+            padding: 24px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .header-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .header-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 18px;
+            background: #e7f1ff;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.55rem;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+
+        .form-control,
+        .input-group .btn {
+            border-radius: 12px;
+            padding: 11px 14px;
+        }
+
+        .input-group .form-control {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .input-group .btn {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            font-weight: 800;
+        }
+
+        .btn {
+            border-radius: 12px;
+            font-weight: 700;
+        }
+
+        .alert {
+            border: none;
+            border-radius: 16px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            color: #111827;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #dbe3ef;
+            white-space: nowrap;
+        }
+
+        .table tbody td {
+            vertical-align: middle;
+            font-size: 0.92rem;
+        }
+
+        .badge-nit {
+            border-radius: 999px;
+            padding: 7px 10px;
+            font-weight: 800;
+            letter-spacing: 0.01em;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .btn-action {
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 11px;
+            transition: all 0.18s ease;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+        }
+
+        .helper-message {
+            min-height: 22px;
+            font-size: 0.84rem;
+            margin-top: 6px;
+            font-weight: 600;
+        }
+
+        .search-box {
+            max-width: 350px;
+        }
+
+        .modal-content {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
+        }
+
+        .modal-header,
+        .modal-footer {
+            border-color: #eef2f7;
+        }
+
+        @media (max-width: 768px) {
+            .header-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .search-box {
+                max-width: 100%;
+                width: 100%;
+            }
+
+            .table-responsive {
+                border-radius: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="page-shell">
+    <div class="clientes-wrapper">
+
+        <div class="card-pro mb-4">
+            <div class="header-card">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="header-icon">
+                        <i class="bi bi-person-vcard"></i>
+                    </div>
+
+                    <div>
+                        <h2 class="fw-bold mb-1">Gestión de Clientes</h2>
+                        <p class="text-muted mb-0">
+                            CRUD de clientes almacenados en formato JSON en MySQL, con validación de NIT y manejo de CF.
+                        </p>
+                    </div>
+                </div>
+
+                <a href="/" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Volver al dashboard
+                </a>
+            </div>
+        </div>
+
+        <% if (success) { %>
+            <div class="alert alert-success mb-4">
+                <i class="bi bi-check-circle-fill me-2"></i><%= success %>
+            </div>
+        <% } %>
+
+        <% if (error) { %>
+            <div class="alert alert-danger mb-4">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i><%= error %>
+            </div>
+        <% } %>
+
+        <div class="card-pro mb-4">
+            <h5 class="section-title">
+                <i class="bi bi-plus-circle text-success"></i>
+                Registrar nuevo cliente
+            </h5>
+
+            <form action="/salidas/clientes" method="POST" class="row g-3" id="formNuevoCliente" novalidate>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">NIT</label>
+                    <div class="input-group">
+                        <input
+                            type="text"
+                            name="nit"
+                            id="nitCliente"
+                            class="form-control"
+                            placeholder="Ej: 1234567 o CF"
+                            autocomplete="off"
+                            required
+                        >
+                        <button type="button" class="btn btn-primary" id="btnCF">
+                            CF
+                        </button>
+                    </div>
+                    <div id="mensajeNit" class="helper-message text-muted">
+                        CF puede repetirse. Otros NIT no.
+                    </div>
+                </div>
+
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold">Nombre</label>
+                    <input type="text" name="nombre" id="nombreCliente" class="form-control" required>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Teléfono</label>
+                    <input type="text" name="telefono" class="form-control" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Dirección</label>
+                    <input type="text" name="direccion" class="form-control" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Correo</label>
+                    <input type="email" name="correo" class="form-control" required>
+                </div>
+
+                <div class="col-12 d-flex gap-2 flex-wrap">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-save me-1"></i> Guardar cliente
+                    </button>
+                    <button type="reset" class="btn btn-outline-secondary" id="btnLimpiar">
+                        <i class="bi bi-eraser me-1"></i> Limpiar
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card-pro">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+                <h5 class="fw-bold mb-0">
+                    <i class="bi bi-table me-2 text-primary"></i>
+                    Listado de clientes
+                </h5>
+                <input type="text" id="buscadorClientes" class="form-control search-box" placeholder="Buscar cliente...">
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle" id="tablaClientes">
+                    <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>NIT</th>
+                        <th>Nombre</th>
+                        <th>Dirección</th>
+                        <th>Teléfono</th>
+                        <th>Correo</th>
+                        <th class="text-end">Acciones</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <% if (clientes.length > 0) { %>
+                        <% clientes.forEach(cliente => { %>
+                            <tr>
+                                <td>#<%= cliente.id_cliente %></td>
+                                <td>
+                                    <span class="badge bg-primary badge-nit"><%= cliente.nit %></span>
+                                </td>
+                                <td><%= cliente.nombre %></td>
+                                <td><%= cliente.direccion %></td>
+                                <td><%= cliente.telefono %></td>
+                                <td><%= cliente.correo %></td>
+                                <td class="text-end">
+                                    <div class="action-buttons">
+                                        <button
+                                            type="button"
+                                            class="btn btn-warning btn-action"
+                                            title="Editar cliente"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#editar<%= cliente.id_cliente %>">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </button>
+
+                                        <form
+                                            action="/salidas/clientes/<%= cliente.id_cliente %>/eliminar"
+                                            method="POST"
+                                            class="form-eliminar-cliente d-inline">
+                                            <button
+                                                type="submit"
+                                                class="btn btn-danger btn-action"
+                                                title="Eliminar cliente">
+                                                <i class="bi bi-trash-fill"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <div class="modal fade" id="editar<%= cliente.id_cliente %>" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-lg modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <form action="/salidas/clientes/<%= cliente.id_cliente %>/editar" method="POST">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title fw-bold">
+                                                    <i class="bi bi-pencil-square text-primary me-2"></i>
+                                                    Editar cliente
+                                                </h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+
+                                            <div class="modal-body row g-3">
+                                                <div class="col-md-4">
+                                                    <label class="form-label fw-semibold">NIT</label>
+                                                    <input type="text" name="nit" class="form-control" value="<%= cliente.nit %>" required>
+                                                    <small class="text-muted">CF puede repetirse. Otros NIT no.</small>
+                                                </div>
+
+                                                <div class="col-md-8">
+                                                    <label class="form-label fw-semibold">Nombre</label>
+                                                    <input type="text" name="nombre" class="form-control" value="<%= cliente.nombre %>" required>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <label class="form-label fw-semibold">Dirección</label>
+                                                    <input type="text" name="direccion" class="form-control" value="<%= cliente.direccion %>" required>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <label class="form-label fw-semibold">Teléfono</label>
+                                                    <input type="text" name="telefono" class="form-control" value="<%= cliente.telefono %>" required>
+                                                </div>
+
+                                                <div class="col-md-3">
+                                                    <label class="form-label fw-semibold">Correo</label>
+                                                    <input type="email" name="correo" class="form-control" value="<%= cliente.correo %>" required>
+                                                </div>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                                    Cancelar
+                                                </button>
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="bi bi-save me-1"></i> Guardar cambios
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                                No hay clientes registrados.
+                            </td>
+                        </tr>
+                    <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    const buscador = document.getElementById('buscadorClientes');
+    const filas = document.querySelectorAll('#tablaClientes tbody tr');
+
+    buscador.addEventListener('keyup', function () {
+        const texto = this.value.toLowerCase();
+
+        filas.forEach(fila => {
+            fila.style.display = fila.textContent.toLowerCase().includes(texto) ? '' : 'none';
+        });
+    });
+</script>
+
+<script>
+    const nitCliente = document.getElementById('nitCliente');
+    const mensajeNit = document.getElementById('mensajeNit');
+    const formNuevoCliente = document.getElementById('formNuevoCliente');
+    const btnCF = document.getElementById('btnCF');
+    const btnLimpiar = document.getElementById('btnLimpiar');
+    let nitPermitido = false;
+
+    function pintarEstadoNit(tipo, mensaje) {
+        nitCliente.classList.remove('is-valid', 'is-invalid');
+        mensajeNit.classList.remove('text-muted', 'text-success', 'text-danger', 'text-warning');
+
+        if (tipo === 'ok') {
+            nitCliente.classList.add('is-valid');
+            mensajeNit.classList.add('text-success');
+            mensajeNit.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i>' + mensaje;
+        } else if (tipo === 'error') {
+            nitCliente.classList.add('is-invalid');
+            mensajeNit.classList.add('text-danger');
+            mensajeNit.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-1"></i>' + mensaje;
+        } else if (tipo === 'warning') {
+            mensajeNit.classList.add('text-warning');
+            mensajeNit.innerHTML = '<i class="bi bi-info-circle-fill me-1"></i>' + mensaje;
+        } else {
+            mensajeNit.classList.add('text-muted');
+            mensajeNit.textContent = mensaje;
+        }
+    }
+
+    async function validarNitEnVivo() {
+        const nit = nitCliente.value.trim().toUpperCase();
+        nitCliente.value = nit;
+
+        if (!nit) {
+            nitPermitido = false;
+            pintarEstadoNit('neutral', 'CF puede repetirse. Otros NIT no.');
+            return false;
+        }
+
+        if (nit === 'CF') {
+            nitPermitido = true;
+            pintarEstadoNit('ok', 'CF permitido. Puede repetirse.');
+            return true;
+        }
+
+        try {
+            const res = await fetch(`/salidas/clientes/validar-nit/${encodeURIComponent(nit)}`);
+            const data = await res.json();
+
+            if (data.permitido) {
+                nitPermitido = true;
+                pintarEstadoNit('ok', data.mensaje || 'NIT disponible.');
+                return true;
+            }
+
+            nitPermitido = false;
+            pintarEstadoNit('error', data.mensaje || 'Este NIT ya existe en el sistema.');
+            return false;
+        } catch (error) {
+            console.error('Error validando NIT:', error);
+            nitPermitido = false;
+            pintarEstadoNit('error', 'No se pudo validar el NIT.');
+            return false;
+        }
+    }
+
+    nitCliente.addEventListener('input', validarNitEnVivo);
+
+    btnCF.addEventListener('click', function () {
+        nitCliente.value = 'CF';
+        validarNitEnVivo();
+    });
+
+    btnLimpiar.addEventListener('click', function () {
+        setTimeout(() => {
+            nitPermitido = false;
+            pintarEstadoNit('neutral', 'CF puede repetirse. Otros NIT no.');
+        }, 0);
+    });
+
+    formNuevoCliente.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const permitido = await validarNitEnVivo();
+
+        if (!permitido) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'NIT ya registrado',
+                text: 'Este NIT ya existe en el sistema. Ingresa otro NIT o utiliza CF.',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#0d6efd'
+            });
+            return;
+        }
+
+        formNuevoCliente.submit();
+    });
+</script>
+
+<script>
+    document.querySelectorAll('.form-eliminar-cliente').forEach(form => {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            Swal.fire({
+                icon: 'warning',
+                title: '¿Eliminar cliente?',
+                text: 'Esta acción no se puede deshacer.',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                background: '#ffffff',
+                color: '#1f2937'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

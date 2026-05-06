@@ -1,0 +1,5 @@
+Ingeniero, le comparto el enlace de mi proyecto:
+
+https://github.com/Kenneth30flp/ProyectoProductos
+
+Incluye el código fuente, la base de datos (script SQL) y las instrucciones para su ejecución.

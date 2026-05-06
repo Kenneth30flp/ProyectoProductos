@@ -4,124 +4,536 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nueva Salida | ProyectoProductos</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
     <style>
-        body {
-            background-color: #f5f7fb;
+        :root {
+            --bg-page: #f4f7fb;
+            --bg-card: #ffffff;
+            --text-main: #111827;
+            --text-soft: #6b7280;
+            --border-soft: #e5eaf2;
+            --primary: #0d6efd;
+            --shadow-soft: 0 12px 34px rgba(15, 23, 42, 0.07);
+            --shadow-hover: 0 18px 44px rgba(15, 23, 42, 0.11);
         }
-        .form-card {
-            background: white;
-            border-radius: 18px;
-            padding: 28px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-            max-width: 760px;
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: radial-gradient(circle at top left, #eaf2ff 0, #f4f7fb 34%, #f4f7fb 100%);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-main);
+        }
+
+        .page-shell {
+            min-height: 100vh;
+            padding: 28px 16px;
+        }
+
+        .salida-wrapper {
+            max-width: 980px;
             margin: 0 auto;
         }
-        .form-control, .form-select {
-            border-radius: 12px;
-            padding: 12px 14px;
+
+        .top-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-soft);
+            border-radius: 26px;
+            padding: 24px 26px;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 20px;
         }
+
+        .page-title-box {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .page-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            background: #eaf2ff;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.55rem;
+            flex-shrink: 0;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 900;
+            line-height: 1.05;
+            margin: 0;
+        }
+
+        .page-subtitle {
+            color: var(--text-soft);
+            margin: 6px 0 0;
+            font-size: 0.96rem;
+        }
+
+        .main-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-soft);
+            border-radius: 26px;
+            box-shadow: var(--shadow-soft);
+            overflow: hidden;
+        }
+
+        .step-header {
+            padding: 20px 26px;
+            border-bottom: 1px solid var(--border-soft);
+            background: linear-gradient(135deg, #ffffff, #f8fbff);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .step-title {
+            font-weight: 850;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-badge {
+            background: #eaf2ff;
+            color: var(--primary);
+            border-radius: 999px;
+            padding: 7px 12px;
+            font-size: 0.82rem;
+            font-weight: 800;
+        }
+
+        .form-area {
+            padding: 26px;
+        }
+
+        .section-mini-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        .form-label {
+            font-weight: 750;
+            font-size: 0.92rem;
+            margin-bottom: 7px;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 15px;
+            padding: 12px 15px;
+            border: 1px solid #dce3ec;
+            min-height: 50px;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.22rem rgba(13, 110, 253, 0.12);
+        }
+
+        .info-card {
+            border: 1px solid #dfe7f1;
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 18px;
+            height: 100%;
+        }
+
+        .info-card.active {
+            background: linear-gradient(135deg, #f8fbff, #eef5ff);
+            border-color: #cfe2ff;
+        }
+
+        .info-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 7px;
+            font-size: 0.94rem;
+        }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-label {
+            min-width: 78px;
+            font-weight: 800;
+        }
+
+        .info-value {
+            color: #374151;
+        }
+
+        .stock-box {
+            border-radius: 18px;
+            padding: 17px 18px;
+            background: #f8fafc;
+            border: 1px solid #dfe7f1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .stock-value {
+            font-weight: 900;
+            color: var(--primary);
+        }
+
         .btn {
-            border-radius: 12px;
-            padding: 11px 16px;
-            font-weight: 600;
-        }
-        .info-box {
             border-radius: 14px;
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            padding: 14px 16px;
+            padding: 11px 17px;
+            font-weight: 800;
+        }
+
+        .btn-primary {
+            box-shadow: 0 10px 22px rgba(13, 110, 253, 0.20);
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .alert {
+            border: none;
+            border-radius: 18px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .helper-text {
+            color: var(--text-soft);
+            font-size: 0.86rem;
+            margin-top: 6px;
+        }
+
+        @media (max-width: 768px) {
+            .top-card,
+            .form-area,
+            .step-header {
+                padding: 18px;
+            }
+
+            .page-title {
+                font-size: 1.55rem;
+            }
+
+            .page-title-box {
+                align-items: flex-start;
+            }
+
+            .step-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
         }
     </style>
 </head>
+
 <body>
-    <div class="container py-4">
-        <div class="form-card">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
-                <div>
-                    <h2 class="fw-bold mb-1">
-                        <i class="bi bi-plus-square me-2 text-primary"></i>
-                        Registrar salida
-                    </h2>
-                    <p class="text-muted mb-0">Descuenta existencias del producto seleccionado.</p>
+<div class="page-shell">
+    <div class="salida-wrapper">
+
+        <div class="top-card">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div class="page-title-box">
+                    <div class="page-icon">
+                        <i class="bi bi-box-arrow-up-right"></i>
+                    </div>
+
+                    <div>
+                        <h1 class="page-title">Registrar salida</h1>
+                        <p class="page-subtitle">
+                            Selecciona el cliente, producto y cantidad para descontar inventario de forma segura.
+                        </p>
+                    </div>
                 </div>
 
-                <div class="d-flex gap-2 flex-wrap">
-                    <a href="/salidas" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-left me-1"></i>Volver
-                    </a>
-                </div>
+                <a href="/salidas" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Volver
+                </a>
+            </div>
+        </div>
+
+        <% if (typeof errorLocal !== 'undefined' && errorLocal) { %>
+            <div class="alert alert-danger mb-4">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <%= errorLocal %>
+            </div>
+        <% } %>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-danger mb-4">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <%= error %>
+            </div>
+        <% } %>
+
+        <div class="main-card">
+            <div class="step-header">
+                <h5 class="step-title">
+                    <i class="bi bi-clipboard-check text-primary"></i>
+                    Formulario de salida de productos
+                </h5>
+
+                <span class="step-badge">
+                    <i class="bi bi-shield-check me-1"></i> Validación de stock
+                </span>
             </div>
 
-            <% if (typeof errorLocal !== 'undefined' && errorLocal) { %>
-                <div class="alert alert-danger"><%= errorLocal %></div>
-            <% } %>
-
-            <% if (typeof error !== 'undefined' && error) { %>
-                <div class="alert alert-danger"><%= error %></div>
-            <% } %>
-
-            <form action="/salidas/nueva" method="POST">
-                <div class="mb-3">
-                    <label for="idProducto" class="form-label fw-semibold">Producto</label>
-                    <select name="idProducto" id="idProducto" class="form-select" required>
-                        <option value="">Seleccione un producto</option>
-                        <% for (let i = 0; i < productos.length; i++) { %>
-                            <% let producto = productos[i]; %>
-                            <option
-                                value="<%= producto.IdProducto %>"
-                                data-stock="<%= producto.Stock %>"
-                                <%= String(old && old.idProducto) === String(producto.IdProducto) ? 'selected' : '' %>>
-                                <%= producto.NombreProducto %> - Stock actual: <%= producto.Stock %>
-                            </option>
-                        <% } %>
-                    </select>
+            <form action="/salidas/nueva" method="POST" class="form-area" id="formSalida">
+                <div class="section-mini-title">
+                    <i class="bi bi-person-vcard me-1"></i> Datos del cliente
                 </div>
 
-                <div class="mb-3">
-                    <label for="cantidad" class="form-label fw-semibold">Cantidad a retirar</label>
-                    <input
-                        type="number"
-                        name="cantidad"
-                        id="cantidad"
-                        class="form-control"
-                        min="1"
-                        value="<%= old && old.cantidad ? old.cantidad : '' %>"
-                        placeholder="Ingrese la cantidad"
-                        required
-                    >
+                <div class="row g-4 mb-4">
+                    <div class="col-lg-7">
+                        <label class="form-label">Cliente registrado</label>
+                        <select id="clienteSelect" class="form-select" required>
+                            <option value="">Seleccione un cliente</option>
+
+                            <% clientes.forEach(cliente => { %>
+                                <option
+                                    value="<%= cliente.nit %>"
+                                    data-nombre="<%= cliente.nombre %>"
+                                    data-direccion="<%= cliente.direccion %>"
+                                    data-telefono="<%= cliente.telefono %>"
+                                    data-correo="<%= cliente.correo %>">
+                                    <%= cliente.nombre %> - NIT: <%= cliente.nit %>
+                                </option>
+                            <% }) %>
+                        </select>
+
+                        <div class="helper-text">
+                            El NIT del cliente seleccionado se enviará automáticamente con la salida.
+                        </div>
+
+                        <input type="hidden" name="nitCliente" id="nitHidden">
+                    </div>
+
+                    <div class="col-lg-5">
+                        <div class="info-card" id="clienteCard">
+                            <h6 class="fw-bold mb-3">
+                                <i class="bi bi-info-circle text-primary me-1"></i>
+                                Información del cliente
+                            </h6>
+
+                            <div class="info-row">
+                                <span class="info-label">Nombre:</span>
+                                <span class="info-value" id="clienteNombre">-</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Dirección:</span>
+                                <span class="info-value" id="clienteDireccion">-</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Teléfono:</span>
+                                <span class="info-value" id="clienteTelefono">-</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Correo:</span>
+                                <span class="info-value" id="clienteCorreo">-</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="info-box mb-4">
-                    <span class="fw-semibold">Stock disponible del producto seleccionado:</span>
-                    <span id="stockDisponible" class="ms-2 text-primary fw-bold">-</span>
+                <div class="section-mini-title">
+                    <i class="bi bi-box-seam me-1"></i> Datos del producto
                 </div>
 
-                <div class="d-flex gap-2 flex-wrap">
+                <div class="row g-4">
+                    <div class="col-lg-7">
+                        <label for="idProducto" class="form-label">Producto</label>
+                        <select name="idProducto" id="idProducto" class="form-select" required>
+                            <option value="">Seleccione un producto</option>
+
+                            <% for (let i = 0; i < productos.length; i++) { %>
+                                <% let producto = productos[i]; %>
+                                <option
+                                    value="<%= producto.IdProducto %>"
+                                    data-stock="<%= producto.Stock %>"
+                                    <%= String(old && old.idProducto) === String(producto.IdProducto) ? 'selected' : '' %>>
+                                    <%= producto.NombreProducto %> - Stock actual: <%= producto.Stock %>
+                                </option>
+                            <% } %>
+                        </select>
+                    </div>
+
+                    <div class="col-lg-5">
+                        <label for="cantidad" class="form-label">Cantidad a retirar</label>
+                        <input
+                            type="number"
+                            name="cantidad"
+                            id="cantidad"
+                            class="form-control"
+                            min="1"
+                            value="<%= old && old.cantidad ? old.cantidad : '' %>"
+                            placeholder="Ingrese la cantidad"
+                            required
+                        >
+                        <div id="mensajeCantidad" class="helper-text"></div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="stock-box">
+                            <div>
+                                <span class="fw-bold">Stock disponible del producto seleccionado</span>
+                                <div class="helper-text mb-0">La salida no puede superar las existencias actuales.</div>
+                            </div>
+
+                            <span id="stockDisponible" class="stock-value">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 flex-wrap mt-4">
                     <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-save me-1"></i>Registrar salida
+                        <i class="bi bi-save me-1"></i> Registrar salida
                     </button>
+
+                    <button type="reset" class="btn btn-outline-secondary" id="btnLimpiar">
+                        <i class="bi bi-eraser me-1"></i> Limpiar
+                    </button>
+
                     <a href="/salidas" class="btn btn-outline-dark">
                         Cancelar
                     </a>
                 </div>
             </form>
         </div>
+
     </div>
+</div>
 
-    <script>
-        const selectProducto = document.getElementById('idProducto');
-        const stockDisponible = document.getElementById('stockDisponible');
+<script>
+    const selectProducto = document.getElementById('idProducto');
+    const stockDisponible = document.getElementById('stockDisponible');
+    const cantidadInput = document.getElementById('cantidad');
+    const mensajeCantidad = document.getElementById('mensajeCantidad');
 
-        function actualizarStockVisible() {
-            const option = selectProducto.options[selectProducto.selectedIndex];
-            const stock = option ? option.getAttribute('data-stock') : null;
-            stockDisponible.textContent = stock ? stock + ' unidades' : '-';
+    const clienteSelect = document.getElementById('clienteSelect');
+    const nitHidden = document.getElementById('nitHidden');
+    const clienteCard = document.getElementById('clienteCard');
+
+    const formSalida = document.getElementById('formSalida');
+    const btnLimpiar = document.getElementById('btnLimpiar');
+
+    function actualizarStockVisible() {
+        const option = selectProducto.options[selectProducto.selectedIndex];
+        const stock = option ? option.getAttribute('data-stock') : null;
+
+        stockDisponible.textContent = stock ? stock + ' unidades' : '-';
+        validarCantidad();
+    }
+
+    function cargarClienteSeleccionado() {
+        const option = clienteSelect.options[clienteSelect.selectedIndex];
+
+        if (!clienteSelect.value) {
+            nitHidden.value = '';
+            clienteCard.classList.remove('active');
+            document.getElementById('clienteNombre').textContent = '-';
+            document.getElementById('clienteDireccion').textContent = '-';
+            document.getElementById('clienteTelefono').textContent = '-';
+            document.getElementById('clienteCorreo').textContent = '-';
+            return;
         }
 
-        selectProducto.addEventListener('change', actualizarStockVisible);
-        actualizarStockVisible();
-    </script>
+        nitHidden.value = clienteSelect.value;
+        clienteCard.classList.add('active');
+
+        document.getElementById('clienteNombre').textContent = option.dataset.nombre || '-';
+        document.getElementById('clienteDireccion').textContent = option.dataset.direccion || '-';
+        document.getElementById('clienteTelefono').textContent = option.dataset.telefono || '-';
+        document.getElementById('clienteCorreo').textContent = option.dataset.correo || '-';
+    }
+
+    function validarCantidad() {
+        const option = selectProducto.options[selectProducto.selectedIndex];
+        const stock = option ? parseInt(option.getAttribute('data-stock') || '0', 10) : 0;
+        const cantidad = parseInt(cantidadInput.value || '0', 10);
+
+        cantidadInput.classList.remove('is-valid', 'is-invalid');
+
+        if (!cantidadInput.value) {
+            mensajeCantidad.textContent = '';
+            return true;
+        }
+
+        if (cantidad <= 0) {
+            cantidadInput.classList.add('is-invalid');
+            mensajeCantidad.className = 'helper-text text-danger';
+            mensajeCantidad.textContent = 'La cantidad debe ser mayor que cero.';
+            return false;
+        }
+
+        if (stock && cantidad > stock) {
+            cantidadInput.classList.add('is-invalid');
+            mensajeCantidad.className = 'helper-text text-danger';
+            mensajeCantidad.textContent = 'La cantidad supera el stock disponible.';
+            return false;
+        }
+
+        cantidadInput.classList.add('is-valid');
+        mensajeCantidad.className = 'helper-text text-success';
+        mensajeCantidad.textContent = 'Cantidad válida para registrar salida.';
+        return true;
+    }
+
+    selectProducto.addEventListener('change', actualizarStockVisible);
+    cantidadInput.addEventListener('input', validarCantidad);
+    clienteSelect.addEventListener('change', cargarClienteSeleccionado);
+
+    btnLimpiar.addEventListener('click', function () {
+        setTimeout(() => {
+            nitHidden.value = '';
+            clienteCard.classList.remove('active');
+            stockDisponible.textContent = '-';
+            mensajeCantidad.textContent = '';
+            cantidadInput.classList.remove('is-valid', 'is-invalid');
+
+            document.getElementById('clienteNombre').textContent = '-';
+            document.getElementById('clienteDireccion').textContent = '-';
+            document.getElementById('clienteTelefono').textContent = '-';
+            document.getElementById('clienteCorreo').textContent = '-';
+        }, 0);
+    });
+
+    formSalida.addEventListener('submit', function (e) {
+        if (!clienteSelect.value) {
+            e.preventDefault();
+            alert('Debe seleccionar un cliente antes de registrar la salida.');
+            return;
+        }
+
+        if (!validarCantidad()) {
+            e.preventDefault();
+            alert('Verifique la cantidad antes de registrar la salida.');
+        }
+    });
+
+    actualizarStockVisible();
+    cargarClienteSeleccionado();
+</script>
+
 </body>
 </html>
