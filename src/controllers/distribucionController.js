@@ -10,18 +10,19 @@ distribucionController.listar = async (req, res) => {
 
         const distribuciones = await pool.request().query(`
             SELECT 
+                pp.IdDistribucion,
                 pp.IdProducto,
                 pp.IdProveedor,
                 p.NombreProducto,
                 pr.NombreProveedor,
                 pp.CantidadSuministrada,
                 p.Stock,
-                CONVERT(VARCHAR(10), p.FechaIngreso, 103) + ' ' +
-                RIGHT(CONVERT(VARCHAR(20), p.FechaIngreso, 100), 7) AS FechaIngresoFormateada
+                CONVERT(VARCHAR(10), GETDATE(), 103) + ' ' +
+                RIGHT(CONVERT(VARCHAR(20), GETDATE(), 100), 7) AS FechaIngresoFormateada
             FROM Producto_Proveedor pp
             INNER JOIN Productos p ON pp.IdProducto = p.IdProducto
             INNER JOIN Proveedores pr ON pp.IdProveedor = pr.IdProveedor
-            ORDER BY p.NombreProducto, pr.NombreProveedor
+            ORDER BY pp.IdDistribucion DESC
         `);
 
         const productos = await pool.request().query(`
@@ -68,25 +69,15 @@ distribucionController.crear = async (req, res) => {
         try {
             const request = new sql.Request(transaction);
 
-            const existeRelacion = await request
+            await request
                 .input('IdProducto', sql.Int, IdProducto)
                 .input('IdProveedor', sql.Int, IdProveedor)
-                .query(`
-                    SELECT *
-                    FROM Producto_Proveedor
-                    WHERE IdProducto = @IdProducto AND IdProveedor = @IdProveedor
-                `);
-
-            if (existeRelacion.recordset.length > 0) {
-                await transaction.rollback();
-                return res.redirect('/distribucion?error=relacion_existente');
-            }
-
-            await request
                 .input('CantidadSuministrada', sql.Int, cantidad)
                 .query(`
-                    INSERT INTO Producto_Proveedor (IdProducto, IdProveedor, CantidadSuministrada)
-                    VALUES (@IdProducto, @IdProveedor, @CantidadSuministrada)
+                    INSERT INTO Producto_Proveedor 
+                    (IdProducto, IdProveedor, CantidadSuministrada)
+                    VALUES 
+                    (@IdProducto, @IdProveedor, @CantidadSuministrada)
                 `);
 
             await request.query(`
@@ -97,11 +88,13 @@ distribucionController.crear = async (req, res) => {
 
             await transaction.commit();
             res.redirect('/distribucion?success=distribucion_creada');
+
         } catch (error) {
             await transaction.rollback();
             console.error('Error al crear distribución:', error);
             res.redirect('/distribucion?error=error_servidor');
         }
+
     } catch (error) {
         console.error('Error general al crear distribución:', error);
         res.redirect('/distribucion?error=error_servidor');
@@ -110,16 +103,16 @@ distribucionController.crear = async (req, res) => {
 
 // FORMULARIO EDITAR DISTRIBUCIÓN
 distribucionController.formEditar = async (req, res) => {
-    const { idProducto, idProveedor } = req.params;
+    const { id } = req.params;
 
     try {
         const pool = await poolPromise;
 
         const relacion = await pool.request()
-            .input('IdProducto', sql.Int, idProducto)
-            .input('IdProveedor', sql.Int, idProveedor)
+            .input('IdDistribucion', sql.Int, id)
             .query(`
                 SELECT 
+                    pp.IdDistribucion,
                     pp.IdProducto,
                     pp.IdProveedor,
                     pp.CantidadSuministrada,
@@ -129,7 +122,7 @@ distribucionController.formEditar = async (req, res) => {
                 FROM Producto_Proveedor pp
                 INNER JOIN Productos p ON pp.IdProducto = p.IdProducto
                 INNER JOIN Proveedores pr ON pp.IdProveedor = pr.IdProveedor
-                WHERE pp.IdProducto = @IdProducto AND pp.IdProveedor = @IdProveedor
+                WHERE pp.IdDistribucion = @IdDistribucion
             `);
 
         if (relacion.recordset.length === 0) {
@@ -149,7 +142,7 @@ distribucionController.formEditar = async (req, res) => {
 
 // ACTUALIZAR DISTRIBUCIÓN
 distribucionController.actualizar = async (req, res) => {
-    const { idProducto, idProveedor } = req.params;
+    const { id } = req.params;
     const { CantidadSuministrada } = req.body;
 
     try {
@@ -168,12 +161,11 @@ distribucionController.actualizar = async (req, res) => {
             const request = new sql.Request(transaction);
 
             const relacionActual = await request
-                .input('IdProducto', sql.Int, idProducto)
-                .input('IdProveedor', sql.Int, idProveedor)
+                .input('IdDistribucion', sql.Int, id)
                 .query(`
-                    SELECT CantidadSuministrada
+                    SELECT IdProducto, CantidadSuministrada
                     FROM Producto_Proveedor
-                    WHERE IdProducto = @IdProducto AND IdProveedor = @IdProveedor
+                    WHERE IdDistribucion = @IdDistribucion
                 `);
 
             if (relacionActual.recordset.length === 0) {
@@ -181,33 +173,20 @@ distribucionController.actualizar = async (req, res) => {
                 return res.redirect('/distribucion?error=relacion_no_encontrada');
             }
 
-            const cantidadAnterior = relacionActual.recordset[0].CantidadSuministrada;
-            const diferencia = nuevaCantidad - cantidadAnterior;
-
-            const productoActual = await request.query(`
-                SELECT Stock
-                FROM Productos
-                WHERE IdProducto = @IdProducto
-            `);
-
-            const stockActual = productoActual.recordset[0].Stock;
-            const stockNuevo = stockActual + diferencia;
-
-            if (stockNuevo < 0) {
-                await transaction.rollback();
-                return res.redirect('/distribucion?error=stock_negativo');
-            }
+            const actual = relacionActual.recordset[0];
+            const diferencia = nuevaCantidad - actual.CantidadSuministrada;
 
             await request
                 .input('NuevaCantidad', sql.Int, nuevaCantidad)
                 .query(`
                     UPDATE Producto_Proveedor
                     SET CantidadSuministrada = @NuevaCantidad
-                    WHERE IdProducto = @IdProducto AND IdProveedor = @IdProveedor
+                    WHERE IdDistribucion = @IdDistribucion
                 `);
 
             await request
                 .input('Diferencia', sql.Int, diferencia)
+                .input('IdProducto', sql.Int, actual.IdProducto)
                 .query(`
                     UPDATE Productos
                     SET Stock = Stock + @Diferencia
@@ -216,11 +195,13 @@ distribucionController.actualizar = async (req, res) => {
 
             await transaction.commit();
             res.redirect('/distribucion?success=distribucion_actualizada');
+
         } catch (error) {
             await transaction.rollback();
             console.error('Error al actualizar distribución:', error);
             res.redirect('/distribucion?error=error_servidor');
         }
+
     } catch (error) {
         console.error('Error general al actualizar distribución:', error);
         res.redirect('/distribucion?error=error_servidor');
@@ -229,7 +210,7 @@ distribucionController.actualizar = async (req, res) => {
 
 // ELIMINAR DISTRIBUCIÓN
 distribucionController.eliminar = async (req, res) => {
-    const { idProducto, idProveedor } = req.params;
+    const { id } = req.params;
 
     try {
         const pool = await poolPromise;
@@ -241,12 +222,11 @@ distribucionController.eliminar = async (req, res) => {
             const request = new sql.Request(transaction);
 
             const relacion = await request
-                .input('IdProducto', sql.Int, idProducto)
-                .input('IdProveedor', sql.Int, idProveedor)
+                .input('IdDistribucion', sql.Int, id)
                 .query(`
-                    SELECT CantidadSuministrada
+                    SELECT IdProducto, CantidadSuministrada
                     FROM Producto_Proveedor
-                    WHERE IdProducto = @IdProducto AND IdProveedor = @IdProveedor
+                    WHERE IdDistribucion = @IdDistribucion
                 `);
 
             if (relacion.recordset.length === 0) {
@@ -254,10 +234,11 @@ distribucionController.eliminar = async (req, res) => {
                 return res.redirect('/distribucion?error=relacion_no_encontrada');
             }
 
-            const cantidad = relacion.recordset[0].CantidadSuministrada;
+            const actual = relacion.recordset[0];
 
             await request
-                .input('Cantidad', sql.Int, cantidad)
+                .input('Cantidad', sql.Int, actual.CantidadSuministrada)
+                .input('IdProducto', sql.Int, actual.IdProducto)
                 .query(`
                     UPDATE Productos
                     SET Stock = Stock - @Cantidad
@@ -266,16 +247,18 @@ distribucionController.eliminar = async (req, res) => {
 
             await request.query(`
                 DELETE FROM Producto_Proveedor
-                WHERE IdProducto = @IdProducto AND IdProveedor = @IdProveedor
+                WHERE IdDistribucion = @IdDistribucion
             `);
 
             await transaction.commit();
             res.redirect('/distribucion?success=distribucion_eliminada');
+
         } catch (error) {
             await transaction.rollback();
             console.error('Error al eliminar distribución:', error);
             res.redirect('/distribucion?error=error_servidor');
         }
+
     } catch (error) {
         console.error('Error general al eliminar distribución:', error);
         res.redirect('/distribucion?error=error_servidor');

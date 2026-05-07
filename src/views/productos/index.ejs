@@ -191,6 +191,15 @@ if (error === "producto_no_encontrado") {
     });
 }
 
+if (error === "producto_con_movimientos") {
+    Swal.fire({
+        icon: 'warning',
+        title: 'Producto protegido',
+        text: 'No puedes eliminar este producto porque tiene distribuciones o salidas registradas.',
+        confirmButtonColor: '#f59e0b'
+    });
+}ñ
+
 if (error === "error_servidor") {
     Swal.fire({
         icon: 'error',

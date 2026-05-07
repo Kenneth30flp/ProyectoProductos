@@ -6,10 +6,8 @@ require('dotenv').config();
 
 const app = express();
 
-// Conexión a BD
 const poolPromise = require('./db');
 
-// Rutas
 const perfilRoutes = require('./routes/perfilRoutes');
 const productosRoutes = require('./routes/productos');
 const proveedoresRoutes = require('./routes/proveedores');
@@ -18,22 +16,26 @@ const reportesRoutes = require('./routes/reportes');
 const authRoutes = require('./routes/auth');
 const salidasRoutes = require('./routes/salidas');
 
-// Middleware auth
 const { verificarSesion } = require('./middlewares/authMiddleware');
 
-// Configuración
 const PORT = process.env.PORT || 3000;
 
 app.set('port', PORT);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Middlewares base
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
+// IMPORTANTE: permite enviar gráficas en Base64 al PDF
+app.use(express.urlencoded({
+    extended: true,
+    limit: '100mb'
+}));
+
+app.use(express.json({
+    limit: '100mb'
+}));
+
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Sesiones
 app.use(session({
     secret: process.env.SESSION_SECRET || 'secret_temporal_proyecto',
     resave: false,
@@ -45,7 +47,6 @@ app.use(session({
     }
 }));
 
-// Variables globales para vistas
 app.use(async (req, res, next) => {
     try {
         const usuarioSesion = req.session.usuario || null;
@@ -94,10 +95,8 @@ app.use(async (req, res, next) => {
     }
 });
 
-// Rutas públicas
 app.use('/auth', authRoutes);
 
-// Dashboard protegido
 app.get('/', verificarSesion, async (req, res) => {
     try {
         const pool = await poolPromise;
@@ -140,7 +139,6 @@ app.get('/', verificarSesion, async (req, res) => {
     }
 });
 
-// Rutas protegidas
 app.use('/productos', verificarSesion, productosRoutes);
 app.use('/proveedores', verificarSesion, proveedoresRoutes);
 app.use('/distribucion', verificarSesion, distribucionRoutes);
@@ -148,7 +146,6 @@ app.use('/reportes', verificarSesion, reportesRoutes);
 app.use('/salidas', verificarSesion, salidasRoutes);
 app.use('/perfil', verificarSesion, perfilRoutes);
 
-// Fallback
 app.use((req, res) => {
     if (!req.session.usuario) {
         return res.redirect('/auth/login?error=Debes iniciar sesión');
@@ -157,12 +154,10 @@ app.use((req, res) => {
     return res.redirect('/?error=La ruta solicitada no existe');
 });
 
-// Iniciar servidor
 const server = app.listen(PORT, () => {
     console.log(`Servidor en http://localhost:${PORT}`);
 });
 
-// Eventos para detectar errores
 server.on('error', (err) => {
     console.error('Error del servidor:', err);
 });
@@ -178,7 +173,3 @@ process.on('uncaughtException', (err) => {
 process.on('unhandledRejection', (reason) => {
     console.error('Promesa rechazada no manejada:', reason);
 });
-
-//app.listen(3000, () => {
- // console.log('Servidor en http://localhost:3000');
-//});

@@ -171,6 +171,33 @@ productosController.eliminar = async (req, res) => {
     try {
         const pool = await poolPromise;
 
+        // VALIDAR SI TIENE SALIDAS
+        const salidas = await pool.request()
+            .input('IdProducto', sql.Int, id)
+            .query(`
+                SELECT COUNT(*) AS total
+                FROM SalidaProductos
+                WHERE IdProducto = @IdProducto
+            `);
+
+        if (salidas.recordset[0].total > 0) {
+            return res.redirect('/productos?error=producto_con_movimientos');
+        }
+
+        // VALIDAR SI TIENE DISTRIBUCIONES
+        const distribuciones = await pool.request()
+            .input('IdProducto', sql.Int, id)
+            .query(`
+                SELECT COUNT(*) AS total
+                FROM Producto_Proveedor
+                WHERE IdProducto = @IdProducto
+            `);
+
+        if (distribuciones.recordset[0].total > 0) {
+            return res.redirect('/productos?error=producto_con_movimientos');
+        }
+
+        // ELIMINAR PRODUCTO
         await pool.request()
             .input('IdProducto', sql.Int, id)
             .query(`

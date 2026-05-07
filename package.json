@@ -19,7 +19,9 @@
     "method-override": "^3.0.0",
     "mssql": "^12.2.0",
     "multer": "^2.1.1",
-    "mysql2": "^3.22.3"
+    "mysql2": "^3.22.3",
+    "pdfkit": "^0.18.0",
+    "pdfkit-table": "^0.1.99"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

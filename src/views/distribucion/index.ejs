@@ -155,11 +155,13 @@
                                     <td><%= item.FechaIngresoFormateada ? item.FechaIngresoFormateada : '-' %></td>
                                     <td class="text-center">
                                         <div class="d-flex justify-content-center gap-2 flex-wrap">
-                                            <a href="/distribucion/editar/<%= item.IdProducto %>/<%= item.IdProveedor %>" class="btn btn-warning btn-sm">
+                                            <a href="/distribucion/editar/<%= item.IdDistribucion %>" class="btn btn-warning btn-sm">
                                                 Editar
                                             </a>
-                                            <a href="/distribucion/eliminar/<%= item.IdProducto %>/<%= item.IdProveedor %>" class="btn btn-danger btn-sm btn-eliminar-distribucion">
+
+                                            <a href="/distribucion/eliminar/<%= item.IdDistribucion %>" class="btn btn-danger btn-sm btn-eliminar-distribucion">
                                                 Eliminar
+                                            </a>
                                             </a>
                                         </div>
                                     </td>
@@ -219,14 +221,6 @@ if (error === "datos_invalidos_distribucion") {
     });
 }
 
-if (error === "relacion_existente") {
-    Swal.fire({
-        icon: 'error',
-        title: 'Relación ya existente',
-        text: 'Ese producto ya está relacionado con ese proveedor.',
-        confirmButtonColor: '#d33'
-    });
-}
 
 if (error === "relacion_no_encontrada") {
     Swal.fire({

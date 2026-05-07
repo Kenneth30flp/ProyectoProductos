@@ -11,8 +11,9 @@
         <div class="card-header bg-warning">
             <h3 class="mb-0">Editar distribución</h3>
         </div>
+
         <div class="card-body">
-            <form action="/distribucion/editar/<%= relacion.IdProducto %>/<%= relacion.IdProveedor %>" method="POST">
+            <form action="/distribucion/editar/<%= relacion.IdDistribucion %>" method="POST">
                 <div class="mb-3">
                     <label class="form-label">Producto</label>
                     <input type="text" class="form-control" value="<%= relacion.NombreProducto %>" readonly>

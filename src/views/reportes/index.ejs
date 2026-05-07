@@ -6,12 +6,22 @@
     <title>Reportes del Sistema</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body>
 <div class="container py-4">
 
     <h1 class="text-center mb-4">Reportes del Sistema</h1>
 
-    <!-- TARJETAS RESUMEN -->
+    <form id="formPDF" action="/reportes/pdf" method="POST" class="d-flex justify-content-end mb-4">
+        <input type="hidden" name="graficoStock" id="inputGraficoStock">
+        <input type="hidden" name="graficoProveedor" id="inputGraficoProveedor">
+        <input type="hidden" name="graficoProductosDistribuidos" id="inputGraficoProductosDistribuidos">
+
+        <button type="submit" class="btn btn-danger shadow">
+            Exportar reporte profesional a PDF
+        </button>
+    </form>
+
     <div class="row g-4 mb-4">
         <div class="col-md-3">
             <div class="card shadow text-center border-0 h-100">
@@ -50,11 +60,8 @@
         </div>
     </div>
 
-    <!-- TABLA STOCK POR PRODUCTO -->
     <div class="card shadow mb-4">
-        <div class="card-header bg-primary text-white">
-            Stock por producto
-        </div>
+        <div class="card-header bg-primary text-white">Stock por producto</div>
         <div class="card-body table-responsive">
             <table class="table table-bordered table-hover align-middle">
                 <thead class="table-light">
@@ -89,11 +96,8 @@
         </div>
     </div>
 
-    <!-- TABLA PROVEEDORES -->
     <div class="card shadow mb-4">
-        <div class="card-header bg-success text-white">
-            Cantidad suministrada por proveedor
-        </div>
+        <div class="card-header bg-success text-white">Cantidad suministrada por proveedor</div>
         <div class="card-body table-responsive">
             <table class="table table-bordered table-hover align-middle">
                 <thead class="table-light">
@@ -128,11 +132,8 @@
         </div>
     </div>
 
-    <!-- TABLA PRODUCTOS MÁS DISTRIBUIDOS -->
     <div class="card shadow mb-4">
-        <div class="card-header bg-dark text-white">
-            Productos más distribuidos
-        </div>
+        <div class="card-header bg-dark text-white">Productos más distribuidos</div>
         <div class="card-body table-responsive">
             <table class="table table-bordered table-hover align-middle">
                 <thead class="table-light">
@@ -163,13 +164,10 @@
         </div>
     </div>
 
-    <!-- GRÁFICAS -->
     <div class="row g-4">
         <div class="col-lg-6">
             <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    Gráfica de stock por producto
-                </div>
+                <div class="card-header bg-primary text-white">Gráfica de stock por producto</div>
                 <div class="card-body">
                     <canvas id="graficoStock"></canvas>
                 </div>
@@ -178,9 +176,7 @@
 
         <div class="col-lg-6">
             <div class="card shadow">
-                <div class="card-header bg-success text-white">
-                    Gráfica de cantidad suministrada por proveedor
-                </div>
+                <div class="card-header bg-success text-white">Gráfica de cantidad suministrada por proveedor</div>
                 <div class="card-body">
                     <canvas id="graficoProveedor"></canvas>
                 </div>
@@ -189,9 +185,7 @@
 
         <div class="col-12">
             <div class="card shadow">
-                <div class="card-header bg-dark text-white">
-                    Gráfica de productos más distribuidos
-                </div>
+                <div class="card-header bg-dark text-white">Gráfica de productos más distribuidos</div>
                 <div class="card-body">
                     <canvas id="graficoProductosDistribuidos"></canvas>
                 </div>
@@ -216,80 +210,98 @@
     const suministradoPorProveedor = JSON.parse(document.getElementById('data-proveedores').textContent);
     const topProductosDistribuidos = JSON.parse(document.getElementById('data-productos-distribuidos').textContent);
 
-    const ctxStock = document.getElementById('graficoStock');
+    const fondoBlancoPDF = {
+        id: 'fondoBlancoPDF',
+        beforeDraw: function(chart) {
+            const ctx = chart.ctx;
+            ctx.save();
+            ctx.globalCompositeOperation = 'destination-over';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, chart.width, chart.height);
+            ctx.restore();
+        }
+    };
 
-    new Chart(ctxStock, {
+    Chart.register(fondoBlancoPDF);
+
+    const chartStock = new Chart(document.getElementById('graficoStock'), {
         type: 'bar',
         data: {
-            labels: stockPorProducto.map(function (item) {
-                return item.NombreProducto;
-            }),
+            labels: stockPorProducto.map(item => item.NombreProducto),
             datasets: [{
                 label: 'Stock actual',
-                data: stockPorProducto.map(function (item) {
-                    return item.Stock;
-                }),
-                borderWidth: 1
+                data: stockPorProducto.map(item => item.Stock),
+                borderWidth: 1,
+                backgroundColor: 'rgba(37, 99, 235, 0.65)',
+                borderColor: 'rgba(37, 99, 235, 1)'
             }]
         },
         options: {
             responsive: true,
+            animation: false,
             scales: {
-                y: {
-                    beginAtZero: true
-                }
+                y: { beginAtZero: true }
             }
         }
     });
 
-    const ctxProveedor = document.getElementById('graficoProveedor');
-
-    new Chart(ctxProveedor, {
+    const chartProveedor = new Chart(document.getElementById('graficoProveedor'), {
         type: 'doughnut',
         data: {
-            labels: suministradoPorProveedor.map(function (item) {
-                return item.NombreProveedor;
-            }),
+            labels: suministradoPorProveedor.map(item => item.NombreProveedor),
             datasets: [{
                 label: 'Total suministrado',
-                data: suministradoPorProveedor.map(function (item) {
-                    return item.TotalSuministrado;
-                }),
+                data: suministradoPorProveedor.map(item => item.TotalSuministrado),
                 borderWidth: 1
             }]
         },
         options: {
-            responsive: true
+            responsive: true,
+            animation: false,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
         }
     });
 
-    const ctxProductosDistribuidos = document.getElementById('graficoProductosDistribuidos');
-
-    new Chart(ctxProductosDistribuidos, {
+    const chartProductosDistribuidos = new Chart(document.getElementById('graficoProductosDistribuidos'), {
         type: 'line',
         data: {
-            labels: topProductosDistribuidos.map(function (item) {
-                return item.NombreProducto;
-            }),
+            labels: topProductosDistribuidos.map(item => item.NombreProducto),
             datasets: [{
                 label: 'Cantidad distribuida',
-                data: topProductosDistribuidos.map(function (item) {
-                    return item.TotalDistribuido;
-                }),
+                data: topProductosDistribuidos.map(item => item.TotalDistribuido),
                 borderWidth: 2,
                 tension: 0.2,
-                fill: false
+                fill: false,
+                borderColor: 'rgba(17, 24, 39, 1)',
+                backgroundColor: 'rgba(17, 24, 39, 0.4)'
             }]
         },
         options: {
             responsive: true,
+            animation: false,
             scales: {
-                y: {
-                    beginAtZero: true
-                }
+                y: { beginAtZero: true }
             }
         }
     });
+
+    document.getElementById('formPDF').addEventListener('submit', function () {
+        chartStock.resize();
+        chartProveedor.resize();
+        chartProductosDistribuidos.resize();
+
+        document.getElementById('inputGraficoStock').value =
+            document.getElementById('graficoStock').toDataURL('image/png');
+
+        document.getElementById('inputGraficoProveedor').value =
+            document.getElementById('graficoProveedor').toDataURL('image/png');
+
+        document.getElementById('inputGraficoProductosDistribuidos').value =
+            document.getElementById('graficoProductosDistribuidos').toDataURL('image/png');
+    });
 </script>
+
 </body>
 </html>
